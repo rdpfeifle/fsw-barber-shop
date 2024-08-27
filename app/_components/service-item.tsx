@@ -1,29 +1,46 @@
 "use client"
 
-import { Barbershop, BarbershopService } from "@prisma/client"
+import { Barbershop, BarbershopService, Booking } from "@prisma/client"
 import Image from "next/image"
 import { Button } from "./ui/button"
 import { Card, CardContent } from "./ui/card"
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "./ui/sheet"
 import { Calendar } from "./ui/calendar"
-import { useState } from "react"
-import { format, set } from "date-fns"
+import { useEffect, useMemo, useState } from "react"
+import { addDays, format, set } from "date-fns"
 import { createAppointments } from "../_actions/create-appointments"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { TIME_SLOTS } from "../_constants/timeSlots"
+import { getAppointments } from "../_actions/get-appointments"
 
 interface ServiceItemProps {
   service: BarbershopService
   barbershop: Pick<Barbershop, "name">
+}
+
+interface GetTimeSlotsProps {
+  bookings: Booking[]
+  // selectedDate: Date
+}
+const getTimeSlots = ({ bookings }: GetTimeSlotsProps) => {
+  return TIME_SLOTS.filter((time) => {
+    const [hours, minutes] = time.split(":")
+
+    const isTimeSlotBooked = bookings.some(
+      (booking) =>
+        booking.date.getHours() === +hours &&
+        booking.date.getMinutes() === +minutes,
+    )
+
+    return !isTimeSlotBooked
+  })
 }
 
 export function ServiceItem({ service, barbershop }: ServiceItemProps) {
@@ -33,6 +50,34 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
     undefined,
   )
+  const [appointmentsDates, setAppointmentsDates] = useState<Booking[]>([])
+  const [isAppointmentSheetOpen, setIsAppointmentSheetOpen] = useState(false)
+
+  // try ReactQuery later on
+  useEffect(() => {
+    const fetch = async () => {
+      if (!selectedDate) return
+      const appointments = await getAppointments({
+        serviceId: service.id,
+        date: selectedDate,
+      })
+      setAppointmentsDates(appointments)
+    }
+    fetch()
+  }, [selectedDate, service.id])
+
+  const handleTimeSlotClick = () => {
+    return data?.user
+      ? setIsAppointmentSheetOpen(true)
+      : setIsAppointmentSheetOpen(false)
+  }
+
+  const toggleAppointmentSlotsSheet = () => {
+    setSelectedDate(undefined)
+    setSelectedTime(undefined)
+    setAppointmentsDates([])
+    setIsAppointmentSheetOpen(false)
+  }
 
   const handleDateSelection = (date: Date | undefined) => {
     setSelectedDate(date)
@@ -58,7 +103,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
         serviceId: service.id,
         date: newAppointment,
       })
-
+      toggleAppointmentSlotsSheet()
       toast.success("Your appointment has been successfully created.")
     } catch (error) {
       console.error("Error: ", error)
@@ -76,6 +121,13 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
 
     return format(newDate, "hh:mm a")
   }
+
+  const timeSlots = useMemo(() => {
+    if (!selectedDate) return []
+    return getTimeSlots({
+      bookings: appointmentsDates,
+    })
+  }, [appointmentsDates])
 
   return (
     <>
@@ -103,12 +155,17 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                 }).format(Number(service.price))}
               </p>
 
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="secondary" size="sm">
-                    Book Now
-                  </Button>
-                </SheetTrigger>
+              <Sheet
+                open={isAppointmentSheetOpen}
+                onOpenChange={toggleAppointmentSlotsSheet}
+              >
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleTimeSlotClick}
+                >
+                  Book Now
+                </Button>
                 <SheetContent className="p-0">
                   <SheetHeader className="pt-5">
                     <SheetTitle>Schedule your Appointment</SheetTitle>
@@ -119,6 +176,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                       mode="single"
                       selected={selectedDate}
                       onSelect={handleDateSelection}
+                      fromDate={addDays(new Date(), 1)}
                       styles={{
                         head_cell: {
                           width: "100%",
@@ -146,20 +204,25 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                   </div>
                   {selectedDate && (
                     <div className="flex gap-3 overflow-x-auto border-b border-solid p-5 [&::-webkit-scrollbar]:hidden">
-                      {TIME_SLOTS.map((time) => (
-                        <Button
-                          key={time}
-                          variant={
-                            selectedTime === time ? "default" : "outline"
-                          }
-                          className="rounded-full"
-                          onClick={() => handleTimeSelection(time)}
-                        >
-                          {convertTo12HourFormat(selectedDate, time)}
-                        </Button>
-                      ))}
+                      {timeSlots.length > 0 ? (
+                        timeSlots.map((time) => (
+                          <Button
+                            key={time}
+                            variant={
+                              selectedTime === time ? "default" : "outline"
+                            }
+                            className="rounded-full"
+                            onClick={() => handleTimeSelection(time)}
+                          >
+                            {convertTo12HourFormat(selectedDate, time)}
+                          </Button>
+                        ))
+                      ) : (
+                        <p>No available time slots</p>
+                      )}
                     </div>
                   )}
+
                   {selectedTime && selectedDate && (
                     <div className="p-5">
                       <Card>
@@ -202,15 +265,13 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                     </div>
                   )}
                   <SheetFooter className="mt-5 px-5">
-                    <SheetClose asChild>
-                      <Button
-                        type="submit"
-                        disabled={!selectedDate || !selectedTime}
-                        onClick={handleCreateAppointment}
-                      >
-                        Confirm
-                      </Button>
-                    </SheetClose>
+                    <Button
+                      type="submit"
+                      disabled={!selectedDate || !selectedTime}
+                      onClick={handleCreateAppointment}
+                    >
+                      Confirm
+                    </Button>
                   </SheetFooter>
                 </SheetContent>
               </Sheet>
