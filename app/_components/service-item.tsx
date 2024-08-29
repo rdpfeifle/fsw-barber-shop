@@ -99,7 +99,6 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
       })
 
       await createAppointments({
-        userId: (data?.user as any).id,
         serviceId: service.id,
         date: newAppointment,
       })
