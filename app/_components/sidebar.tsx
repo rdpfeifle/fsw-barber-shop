@@ -6,23 +6,16 @@ import { SheetClose, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
 import Link from "next/link"
 import { quickSearchOptions } from "../_constants/search"
 import Image from "next/image"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog"
-import { signIn, signOut, useSession } from "next-auth/react"
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
+import { useSession, signOut } from "next-auth/react"
 import { Avatar, AvatarImage } from "./ui/avatar"
+import { LoginDialog } from "./login"
 
 export function Sidebar() {
   const { data } = useSession()
-  const handleLoginWithGoogle = () => signIn("google")
+
   const handleSignOut = () => signOut()
 
-  console.log(data)
   return (
     <SheetContent className="overflow-y-auto">
       <SheetHeader>
@@ -50,25 +43,7 @@ export function Sidebar() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="w-[90%]">
-                <DialogHeader>
-                  <DialogTitle>Log In</DialogTitle>
-                  <DialogDescription>
-                    Sign in with your Google account.
-                  </DialogDescription>
-                </DialogHeader>
-                <Button
-                  variant="outline"
-                  className="gap-1 font-bold"
-                  onClick={handleLoginWithGoogle}
-                >
-                  <Image
-                    alt="Sign in with your Google account"
-                    src="/google.svg"
-                    width={18}
-                    height={18}
-                  />
-                  Google
-                </Button>
+                <LoginDialog />
               </DialogContent>
             </Dialog>
           </>

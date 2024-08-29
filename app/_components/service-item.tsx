@@ -13,12 +13,14 @@ import {
 } from "./ui/sheet"
 import { Calendar } from "./ui/calendar"
 import { useEffect, useMemo, useState } from "react"
-import { addDays, format, set } from "date-fns"
+import { format, set } from "date-fns"
 import { createAppointments } from "../_actions/create-appointments"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { TIME_SLOTS } from "../_constants/timeSlots"
 import { getAppointments } from "../_actions/get-appointments"
+import { Dialog, DialogContent } from "./ui/dialog"
+import { LoginDialog } from "./login"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -46,6 +48,7 @@ const getTimeSlots = ({ bookings }: GetTimeSlotsProps) => {
 export function ServiceItem({ service, barbershop }: ServiceItemProps) {
   const { data } = useSession()
 
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
     undefined,
@@ -66,11 +69,8 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
     fetch()
   }, [selectedDate, service.id])
 
-  const handleTimeSlotClick = () => {
-    return data?.user
-      ? setIsAppointmentSheetOpen(true)
-      : setIsAppointmentSheetOpen(false)
-  }
+  const handleTimeSlotClick = () =>
+    data?.user ? setIsAppointmentSheetOpen(true) : setIsLoginDialogOpen(true)
 
   const toggleAppointmentSlotsSheet = () => {
     setSelectedDate(undefined)
@@ -176,7 +176,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                       mode="single"
                       selected={selectedDate}
                       onSelect={handleDateSelection}
-                      fromDate={addDays(new Date(), 1)}
+                      fromDate={new Date()}
                       styles={{
                         head_cell: {
                           width: "100%",
@@ -218,7 +218,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                           </Button>
                         ))
                       ) : (
-                        <p>No available time slots</p>
+                        <p>No available time slots.</p>
                       )}
                     </div>
                   )}
@@ -240,7 +240,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                           <div className="flex items-center justify-between">
                             <h2 className="text-sm text-gray-400">Date</h2>
                             <p className="text-sm">
-                              {format(selectedDate, "EEEE, MMMM d, y")}
+                              {format(selectedDate, "E, MMMM d, y")}
                             </p>
                           </div>
 
@@ -279,6 +279,14 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
           </div>
         </CardContent>
       </Card>
+      <Dialog
+        open={isLoginDialogOpen}
+        onOpenChange={(open) => setIsLoginDialogOpen(open)}
+      >
+        <DialogContent className="w-[90%]">
+          <LoginDialog />
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
