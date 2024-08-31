@@ -21,6 +21,7 @@ import { TIME_SLOTS } from "../_constants/timeSlots"
 import { getAppointments } from "../_actions/get-appointments"
 import { Dialog, DialogContent } from "./ui/dialog"
 import { LoginDialog } from "./login"
+import { convertTo12HourFormat } from "../_utils/dateUtils"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -110,15 +111,6 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
         "There was an error creating your appointment. Please try again.",
       )
     }
-  }
-
-  const convertTo12HourFormat = (selectedDate: Date, time: string) => {
-    if (!selectedDate) return time
-
-    const [hours, minutes] = time.split(":")
-    const newDate = set(selectedDate, { hours: +hours, minutes: +minutes })
-
-    return format(newDate, "hh:mm a")
   }
 
   const timeSlots = useMemo(() => {
