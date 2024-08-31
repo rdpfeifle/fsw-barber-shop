@@ -7,15 +7,16 @@ import { quickSearchOptions } from "./_constants/search"
 import { AppointmentItem } from "./_components/appointment-item"
 import { Search } from "./_components/search"
 import Link from "next/link"
+import { getConfirmedAppointments } from "./_data/get-confirmed-appointments"
 
 export default async function Home() {
   const barbershops = await db.barbershop.findMany({})
-
   const popularBarbershops = await db.barbershop.findMany({
     orderBy: {
       name: "desc",
     },
   })
+  const confirmedAppointments = await getConfirmedAppointments()
 
   return (
     <div>
@@ -63,7 +64,14 @@ export default async function Home() {
         </div>
 
         {/* APPOINTMENTS */}
-        <AppointmentItem />
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+          Appointments
+        </h2>
+        <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {confirmedAppointments.map((appointment) => (
+            <AppointmentItem key={appointment.id} appointment={appointment} />
+          ))}
+        </div>
 
         {/* RECOMMENDED */}
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
