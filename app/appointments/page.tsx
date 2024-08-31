@@ -18,18 +18,26 @@ export default async function Appointments() {
       <Header />
       <div className="space-y-3 p-5">
         <h1 className="text-xl font-bold">Appointments</h1>
-        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
-          Confirmed
-        </h2>
-        {confirmedAppointments.map((appointment) => (
-          <AppointmentItem key={appointment.id} appointment={appointment} />
-        ))}
-        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
-          Past
-        </h2>
-        {pastAppointments.map((appointment) => (
-          <AppointmentItem key={appointment.id} appointment={appointment} />
-        ))}
+        {confirmedAppointments.length > 0 && (
+          <>
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+              Confirmed
+            </h2>
+            {confirmedAppointments.map((appointment) => (
+              <AppointmentItem key={appointment.id} appointment={appointment} />
+            ))}
+          </>
+        )}
+        {pastAppointments.length > 0 && (
+          <>
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+              Past
+            </h2>
+            {pastAppointments.map((appointment) => (
+              <AppointmentItem key={appointment.id} appointment={appointment} />
+            ))}
+          </>
+        )}
       </div>
     </>
   )

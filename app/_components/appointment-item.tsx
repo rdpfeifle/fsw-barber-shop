@@ -1,10 +1,14 @@
+"use client"
+
 import { Prisma } from "@prisma/client"
 import { Card, CardContent } from "./ui/card"
 import { Avatar, AvatarImage } from "./ui/avatar"
 import { format, isFuture } from "date-fns"
 import {
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -12,6 +16,19 @@ import {
 import Image from "next/image"
 import { ConfirmationTag } from "./confirmation-tag"
 import PhoneItem from "./phone-item"
+import { Button } from "./ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog"
+import { deleteAppointment } from "../_actions/delete-appointment"
+import { toast } from "sonner"
 
 interface AppointmentItemProps {
   appointment: Prisma.BookingGetPayload<{
@@ -29,6 +46,19 @@ export function AppointmentItem({ appointment }: AppointmentItemProps) {
   const { name, imageUrl, address, phones } = appointment.service.barbershop
   const { date } = appointment
   const isConfirmed = isFuture(appointment.date)
+
+  const handleCancelAppointment = async () => {
+    try {
+      await deleteAppointment(appointment.id)
+      toast.success("Your reservation has been canceled.")
+    } catch (e) {
+      console.error(
+        "A problem occurred while trying to delete the appointment...",
+        e,
+      )
+      toast.error("Cancellation failed. Please try again.")
+    }
+  }
 
   return (
     <Sheet>
@@ -121,6 +151,52 @@ export function AppointmentItem({ appointment }: AppointmentItemProps) {
             ))}
           </div>
         </div>
+        <SheetFooter className="mt-6">
+          <div className="flex items-center gap-3">
+            <SheetClose asChild>
+              <Button variant="outline" className="w-full">
+                Back
+              </Button>
+            </SheetClose>
+
+            {isConfirmed && (
+              <Dialog>
+                <DialogTrigger className="w-full">
+                  <Button variant="destructive" className="w-full">
+                    Cancel Reservation
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[90%] py-10">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Do you want to cancel your reservation?
+                    </DialogTitle>
+                    <DialogDescription>
+                      This action is irreversible. By canceling, you will lose
+                      your reservation and will not be able to recover it.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="flex flex-row gap-3">
+                    <DialogClose asChild>
+                      <Button variant="secondary" className="w-full">
+                        Back
+                      </Button>
+                    </DialogClose>
+                    <DialogClose className="w-full" asChild>
+                      <Button
+                        variant="destructive"
+                        className="w-full"
+                        onClick={handleCancelAppointment}
+                      >
+                        Cancel Reservation
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   )

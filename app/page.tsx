@@ -64,14 +64,21 @@ export default async function Home() {
         </div>
 
         {/* APPOINTMENTS */}
-        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
-          Appointments
-        </h2>
-        <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-          {confirmedAppointments.map((appointment) => (
-            <AppointmentItem key={appointment.id} appointment={appointment} />
-          ))}
-        </div>
+        {confirmedAppointments.length > 0 && (
+          <>
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+              Appointments
+            </h2>
+            <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+              {confirmedAppointments.map((appointment) => (
+                <AppointmentItem
+                  key={appointment.id}
+                  appointment={appointment}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* RECOMMENDED */}
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
