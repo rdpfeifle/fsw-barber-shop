@@ -13,7 +13,7 @@ import {
 } from "./ui/sheet"
 import { Calendar } from "./ui/calendar"
 import { useEffect, useMemo, useState } from "react"
-import { format, set } from "date-fns"
+import { format, isPast, isToday, set } from "date-fns"
 import { createAppointments } from "../_actions/create-appointments"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
@@ -30,11 +30,17 @@ interface ServiceItemProps {
 
 interface GetTimeSlotsProps {
   bookings: Booking[]
-  // selectedDate: Date
+  selectedDate: Date
 }
-const getTimeSlots = ({ bookings }: GetTimeSlotsProps) => {
+
+const getTimeSlots = ({ bookings, selectedDate }: GetTimeSlotsProps) => {
   return TIME_SLOTS.filter((time) => {
     const [hours, minutes] = time.split(":")
+
+    const isTimeOnThePast = isPast(
+      set(new Date(), { hours: +hours, minutes: +minutes }),
+    )
+    if (isTimeOnThePast && isToday(selectedDate)) return false
 
     const isTimeSlotBooked = bookings.some(
       (booking) =>
@@ -117,8 +123,9 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
     if (!selectedDate) return []
     return getTimeSlots({
       bookings: appointmentsDates,
+      selectedDate,
     })
-  }, [appointmentsDates])
+  }, [appointmentsDates, selectedDate])
 
   return (
     <>
@@ -209,7 +216,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                           </Button>
                         ))
                       ) : (
-                        <p>No available time slots.</p>
+                        <p className="text-xs">No available time slots.</p>
                       )}
                     </div>
                   )}
