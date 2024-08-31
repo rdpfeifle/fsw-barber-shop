@@ -1,3 +1,5 @@
+import { getServerSession } from "next-auth"
+import { authOptions } from "./_lib/auth"
 import { Header } from "./_components/header"
 import { Button } from "./_components/ui/button"
 import Image from "next/image"
@@ -8,8 +10,11 @@ import { AppointmentItem } from "./_components/appointment-item"
 import { Search } from "./_components/search"
 import Link from "next/link"
 import { getConfirmedAppointments } from "./_data/get-confirmed-appointments"
+import { format } from "date-fns"
 
 export default async function Home() {
+  const session = await getServerSession(authOptions)
+
   const barbershops = await db.barbershop.findMany({})
   const popularBarbershops = await db.barbershop.findMany({
     orderBy: {
@@ -23,8 +28,12 @@ export default async function Home() {
       <Header />
       <div className="p-5">
         {/* TEXT */}
-        <h2 className="text-xl font-bold">Hello, John!</h2>
-        <p>Sunday, August 11.</p>
+        <h2 className="text-xl font-bold">
+          {session?.user
+            ? `Hello, ${session?.user.name?.split(" ")[0]}!`
+            : "Welcome to TrimHub!"}
+        </h2>
+        <p>{format(new Date(), "EEEE, MMMM dd.")}</p>
 
         {/* SEARCH */}
         <div className="mt-6">
