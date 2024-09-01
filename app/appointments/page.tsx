@@ -24,7 +24,10 @@ export default async function Appointments() {
               Confirmed
             </h2>
             {confirmedAppointments.map((appointment) => (
-              <AppointmentItem key={appointment.id} appointment={appointment} />
+              <AppointmentItem
+                key={appointment.id}
+                appointment={JSON.parse(JSON.stringify(appointment))}
+              />
             ))}
           </>
         )}
@@ -34,7 +37,10 @@ export default async function Appointments() {
               Past
             </h2>
             {pastAppointments.map((appointment) => (
-              <AppointmentItem key={appointment.id} appointment={appointment} />
+              <AppointmentItem
+                key={appointment.id}
+                appointment={JSON.parse(JSON.stringify(appointment))}
+              />
             ))}
           </>
         )}

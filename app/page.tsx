@@ -82,7 +82,7 @@ export default async function Home() {
               {confirmedAppointments.map((appointment) => (
                 <AppointmentItem
                   key={appointment.id}
-                  appointment={appointment}
+                  appointment={JSON.parse(JSON.stringify(appointment))}
                 />
               ))}
             </div>

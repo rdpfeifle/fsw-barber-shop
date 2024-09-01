@@ -62,12 +62,13 @@ export function AppointmentItem({ appointment }: AppointmentItemProps) {
 
   return (
     <Sheet>
-      <SheetTrigger className="w-full">
-        <Card className="min-w-[90%]">
+      <SheetTrigger className="w-full min-w-[90%]">
+        <Card>
           <CardContent className="flex justify-between p-0">
             {/* LEFT */}
             <div className="flex flex-col gap-2 py-5 pl-5">
               <ConfirmationTag isConfirmed={isConfirmed} />
+
               <h3 className="font-semibold">{appointment.service.name}</h3>
 
               <div className="flex items-center gap-2">
