@@ -23,6 +23,7 @@ import { Dialog, DialogContent } from "./ui/dialog"
 import { LoginDialog } from "./login"
 import { convertTo12HourFormat } from "../_utils/dateUtils"
 import { AppointmentSummary } from "./appointment-summary"
+import { useRouter } from "next/navigation"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -55,7 +56,7 @@ const getTimeSlots = ({ bookings, selectedDate }: GetTimeSlotsProps) => {
 
 export function ServiceItem({ service, barbershop }: ServiceItemProps) {
   const { data } = useSession()
-
+  const router = useRouter()
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
@@ -104,7 +105,12 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
         date: selectedAppointment,
       })
       toggleAppointmentSlotsSheet()
-      toast.success("Your appointment has been successfully created.")
+      toast.success("Your appointment has been successfully created.", {
+        action: {
+          label: "See appointments",
+          onClick: () => router.push("/appointments"),
+        },
+      })
     } catch (error) {
       console.error("Error: ", error)
       toast.error(
