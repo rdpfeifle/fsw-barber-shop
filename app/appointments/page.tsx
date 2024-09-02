@@ -18,6 +18,10 @@ export default async function Appointments() {
       <Header />
       <div className="space-y-3 p-5">
         <h1 className="text-xl font-bold">Appointments</h1>
+        {confirmedAppointments.length === 0 &&
+          pastAppointments.length === 0 && (
+            <p>You haven&apos;t made any appointments yet.</p>
+          )}
         {confirmedAppointments.length > 0 && (
           <>
             <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
