@@ -29,6 +29,7 @@ import {
 } from "./ui/dialog"
 import { deleteAppointment } from "../_actions/delete-appointment"
 import { toast } from "sonner"
+import { AppointmentSummary } from "./appointment-summary"
 
 interface AppointmentItemProps {
   appointment: Prisma.BookingGetPayload<{
@@ -44,7 +45,6 @@ interface AppointmentItemProps {
 
 export function AppointmentItem({ appointment }: AppointmentItemProps) {
   const { name, imageUrl, address, phones } = appointment.service.barbershop
-  const { date } = appointment
   const isConfirmed = isFuture(appointment.date)
 
   const handleCancelAppointment = async () => {
@@ -116,36 +116,14 @@ export function AppointmentItem({ appointment }: AppointmentItemProps) {
 
         <div className="mt-6">
           <ConfirmationTag isConfirmed={isConfirmed} />
+          <div className="mb-3 mt-6">
+            <AppointmentSummary
+              service={appointment.service}
+              barbershop={appointment.service.barbershop}
+              selectedDate={appointment.date}
+            />
+          </div>
 
-          {/* TODO: create component for this, also used in ServiceItem */}
-          <Card className="mb-6 mt-3">
-            <CardContent className="space-y-3 p-3">
-              <div className="flex items-center justify-between">
-                <h2 className="font-bold">{name}</h2>
-                <p className="text-sm font-bold">
-                  {Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  }).format(Number(appointment.service.price))}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Date</h2>
-                <p className="text-sm">{format(date, "E, MMMM d, y")}</p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Time</h2>
-                <p className="text-sm">{format(date, "hh:mm a")}</p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Barbershop</h2>
-                <p className="text-sm">{name}</p>
-              </div>
-            </CardContent>
-          </Card>
           <div className="space-y-3">
             {phones.map((phone) => (
               <PhoneItem key={phone} phone={phone} />

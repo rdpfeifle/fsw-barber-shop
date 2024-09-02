@@ -13,7 +13,7 @@ import {
 } from "./ui/sheet"
 import { Calendar } from "./ui/calendar"
 import { useEffect, useMemo, useState } from "react"
-import { format, isPast, isToday, set } from "date-fns"
+import { isPast, isToday, set } from "date-fns"
 import { createAppointments } from "../_actions/create-appointments"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
@@ -22,6 +22,7 @@ import { getAppointments } from "../_actions/get-appointments"
 import { Dialog, DialogContent } from "./ui/dialog"
 import { LoginDialog } from "./login"
 import { convertTo12HourFormat } from "../_utils/dateUtils"
+import { AppointmentSummary } from "./appointment-summary"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -96,18 +97,11 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
 
   const handleCreateAppointment = async () => {
     try {
-      if (!selectedDate || !selectedTime) return
-
-      const [hours, minutes] = selectedTime?.split(":")
-
-      const newAppointment = set(selectedDate, {
-        minutes: +minutes,
-        hours: +hours,
-      })
+      if (!selectedAppointment) return
 
       await createAppointments({
         serviceId: service.id,
-        date: newAppointment,
+        date: selectedAppointment,
       })
       toggleAppointmentSlotsSheet()
       toast.success("Your appointment has been successfully created.")
@@ -126,6 +120,17 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
       selectedDate,
     })
   }, [appointmentsDates, selectedDate])
+
+  const selectedAppointment = useMemo(() => {
+    if (!selectedDate || !selectedTime) return
+
+    const [hours, minutes] = selectedTime?.split(":")
+
+    return set(selectedDate, {
+      hours: +hours,
+      minutes: +minutes,
+    })
+  }, [selectedDate, selectedTime])
 
   return (
     <>
@@ -221,45 +226,13 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                     </div>
                   )}
 
-                  {selectedTime && selectedDate && (
+                  {selectedAppointment && (
                     <div className="p-5">
-                      <Card>
-                        <CardContent className="space-y-3 p-3">
-                          <div className="flex items-center justify-between">
-                            <h2 className="font-bold">{service.name}</h2>
-                            <p className="text-sm font-bold">
-                              {Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              }).format(Number(service.price))}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-sm text-gray-400">Date</h2>
-                            <p className="text-sm">
-                              {format(selectedDate, "E, MMMM d, y")}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-sm text-gray-400">Time</h2>
-                            <p className="text-sm">
-                              {convertTo12HourFormat(
-                                selectedDate,
-                                selectedTime,
-                              )}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-sm text-gray-400">
-                              Barbershop
-                            </h2>
-                            <p className="text-sm">{barbershop.name}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <AppointmentSummary
+                        service={service}
+                        barbershop={barbershop}
+                        selectedDate={selectedAppointment}
+                      />
                     </div>
                   )}
                   <SheetFooter className="mt-5 px-5">

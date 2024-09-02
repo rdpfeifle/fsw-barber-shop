@@ -14,7 +14,7 @@ export function LoginDialog() {
       </DialogHeader>
       <Button
         variant="outline"
-        className="gap-1 font-bold"
+        className="gap-2 font-bold"
         onClick={handleLoginWithGoogle}
       >
         <Image
