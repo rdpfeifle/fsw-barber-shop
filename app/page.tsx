@@ -26,9 +26,9 @@ export default async function Home() {
   return (
     <div>
       <Header />
-      <div className="p-5">
+      <div className="mx-auto w-full max-w-6xl p-5 lg:px-8 lg:py-8">
         {/* TEXT */}
-        <h2 className="text-xl font-bold">
+        <h2 className="text-xl font-bold lg:text-2xl">
           {session?.user
             ? `Hello, ${session?.user.name?.split(" ")[0]}!`
             : "Welcome to TrimHub!"}
@@ -36,12 +36,12 @@ export default async function Home() {
         <p>{format(new Date(), "EEEE, MMMM dd.")}</p>
 
         {/* SEARCH */}
-        <div className="mt-6">
+        <div className="mt-6 lg:max-w-xl">
           <Search />
         </div>
 
         {/* QUICK SEARCH */}
-        <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
+        <div className="mt-6 flex gap-3 overflow-x-scroll md:flex-wrap md:overflow-x-visible [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
             <Button
               className="gap-2"
@@ -63,7 +63,7 @@ export default async function Home() {
         </div>
 
         {/* BANNER */}
-        <div className="relative mt-6 h-[150px] w-full">
+        <div className="relative mt-6 h-[150px] w-full md:h-[260px] lg:h-[320px]">
           <Image
             alt="Book with the best at FSW Barber"
             src="/banner-01.png"
@@ -78,7 +78,7 @@ export default async function Home() {
             <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
               Appointments
             </h2>
-            <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-3 overflow-x-auto md:grid md:grid-cols-2 md:overflow-x-visible lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
               {confirmedAppointments.map((appointment) => (
                 <AppointmentItem
                   key={appointment.id}
@@ -93,7 +93,7 @@ export default async function Home() {
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recommended
         </h2>
-        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-4 overflow-auto md:grid md:grid-cols-3 md:overflow-visible lg:grid-cols-4 xl:grid-cols-5 [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
@@ -103,7 +103,7 @@ export default async function Home() {
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Popular
         </h2>
-        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-4 overflow-auto md:grid md:grid-cols-3 md:overflow-visible lg:grid-cols-4 xl:grid-cols-5 [&::-webkit-scrollbar]:hidden">
           {popularBarbershops.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}

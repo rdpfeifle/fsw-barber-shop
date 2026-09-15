@@ -10,14 +10,14 @@ async function BarbershopsPage({ searchParams }: BarbershopsPageProps) {
   return (
     <div>
       <Header />
-      <div className="my-6 px-5">
-        <Search />
-      </div>
-      <div className="px-5">
+      <div className="mx-auto w-full max-w-6xl px-5 lg:px-8">
+        <div className="my-6 lg:max-w-xl">
+          <Search />
+        </div>
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Results for &quot;{searchParams?.title || searchParams?.service}&quot;
         </h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {barbershops.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
