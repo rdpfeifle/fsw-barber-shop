@@ -152,7 +152,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
             />
           </div>
           {/* INFO */}
-          <div className="space-y-2">
+          <div className="w-full space-y-2">
             <h3 className="text-sm font-semibold">{service.name}</h3>
             <p className="text-sm text-gray-400">{service.description}</p>
             {/* PRICE AND BUTTON */}
@@ -175,7 +175,7 @@ export function ServiceItem({ service, barbershop }: ServiceItemProps) {
                 >
                   Book Now
                 </Button>
-                <SheetContent className="p-0">
+                <SheetContent className="overflow-y-auto p-0 sm:max-w-md">
                   <SheetHeader className="pt-5">
                     <SheetTitle>Schedule your Appointment</SheetTitle>
                   </SheetHeader>

@@ -62,7 +62,7 @@ export function AppointmentItem({ appointment }: AppointmentItemProps) {
 
   return (
     <Sheet>
-      <SheetTrigger className="w-full min-w-[90%]">
+      <SheetTrigger className="w-full min-w-[90%] md:min-w-0">
         <Card>
           <CardContent className="flex justify-between p-0">
             {/* LEFT */}
@@ -89,7 +89,7 @@ export function AppointmentItem({ appointment }: AppointmentItemProps) {
           </CardContent>
         </Card>
       </SheetTrigger>
-      <SheetContent className="w-[85%]">
+      <SheetContent className="w-[85%] overflow-y-auto sm:max-w-md">
         <SheetHeader>
           <SheetTitle>Appointment Details</SheetTitle>
         </SheetHeader>

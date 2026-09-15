@@ -16,8 +16,8 @@ export default async function Appointments() {
   return (
     <>
       <Header />
-      <div className="space-y-3 p-5">
-        <h1 className="text-xl font-bold">Appointments</h1>
+      <div className="mx-auto w-full max-w-6xl space-y-3 p-5 lg:px-8 lg:py-8">
+        <h1 className="text-xl font-bold lg:text-2xl">Appointments</h1>
         {confirmedAppointments.length === 0 &&
           pastAppointments.length === 0 && (
             <p>You haven&apos;t made any appointments yet.</p>
@@ -27,12 +27,14 @@ export default async function Appointments() {
             <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
               Confirmed
             </h2>
-            {confirmedAppointments.map((appointment) => (
-              <AppointmentItem
-                key={appointment.id}
-                appointment={JSON.parse(JSON.stringify(appointment))}
-              />
-            ))}
+            <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:grid-cols-3">
+              {confirmedAppointments.map((appointment) => (
+                <AppointmentItem
+                  key={appointment.id}
+                  appointment={JSON.parse(JSON.stringify(appointment))}
+                />
+              ))}
+            </div>
           </>
         )}
         {pastAppointments.length > 0 && (
@@ -40,12 +42,14 @@ export default async function Appointments() {
             <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
               Past
             </h2>
-            {pastAppointments.map((appointment) => (
-              <AppointmentItem
-                key={appointment.id}
-                appointment={JSON.parse(JSON.stringify(appointment))}
-              />
-            ))}
+            <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:grid-cols-3">
+              {pastAppointments.map((appointment) => (
+                <AppointmentItem
+                  key={appointment.id}
+                  appointment={JSON.parse(JSON.stringify(appointment))}
+                />
+              ))}
+            </div>
           </>
         )}
       </div>
